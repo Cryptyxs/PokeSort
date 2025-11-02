@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokéSort</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" href="assets/favicon.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="script.js"></script>
+</head>
+<body>
+    <div id="welcome-page">
+        <h1 class="welcome-title">PokéSort</h1>
+        <p class="welcome-subtitle">Sort Pokemon by their Base Stat Total!</p>
+        
+        <div id="welcome-pokemon-showcase"></div>
+        
+        <button id="welcome-start-button" class="welcome-button">Start Game</button>
+    </div>
+
+    <div id="game-page" style="display: none;">
+        <h1>PokéSort</h1>
+        <p>Welcome to PokéSort! Click the button below to start playing.</p>
+        <div class="controls">
+            <select id="generation-select">
+                <option value="all" selected>All Generations</option>
+                <option value="1">Generation 1</option>
+                <option value="2">Generation 2</option>
+                <option value="3">Generation 3</option>
+                <option value="4">Generation 4</option>
+                <option value="5">Generation 5</option>
+                <option value="6">Generation 6</option>
+                <option value="7">Generation 7</option>
+                <option value="8">Generation 8</option>
+                <option value="9">Generation 9</option>
+            </select>
+            <select id="difficulty-select">
+                <option value="5">Easy</option>
+                <option value="10">Medium</option>
+                <option value="15">Hard</option>
+            </select>
+            <button class="controls-overlay">Start Game</button>
+        </div>
+        <div id="game-container">
+            <div id="game-board">
+                <div id="game-board-sorted-cards"></div>
+            </div>
+            <div id="game-info">
+                <h2>Game Info</h2>
+                <p id="game-info-text">Select your generation and difficulty, then click Start Game to begin!</p>
+            </div>
+            <div id="game-score">
+                <h2>Game Score</h2>
+                <p id="game-score-text">Score: 0</p>
+            </div>
+        </div>
+        <div id="Pokemon-container"></div>
+    </div>
+</body>
+</html>
