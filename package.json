@@ -1,0 +1,22 @@
+{
+  "name": "pokesort",
+  "version": "1.0.0",
+  "description": "PokéSort - Sort Pokemon by their Base Stat Total",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=14.x"
+  },
+  "keywords": [
+    "pokemon",
+    "game",
+    "sorting"
+  ],
+  "author": "",
+  "license": "ISC"
+}
