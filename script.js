@@ -1,11 +1,11 @@
-// Wait for page to load before running code
+// Wait for page load
 document.addEventListener("DOMContentLoaded", () => {
     const welcomePage = document.getElementById("welcome-page");
     const gamePage = document.getElementById("game-page");
     const welcomeStartButton = document.getElementById("welcome-start-button");
     const welcomeShowcase = document.getElementById("welcome-pokemon-showcase");
     
-    // Easter Egg :) : ORAS game song
+    // Easter Egg: Title click (5x) plays ORAS song
     let titleClicks = 0;
     const gameTitle = document.querySelector("h1");
     if (gameTitle) {
@@ -22,14 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
     
-    // Easter Egg :) : ↑ ↑ ↓ ↓ ← → ← → B A
+    // Easter Egg: Konami Code (↑↑↓↓←→←→BA)
     const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
     let konamiIndex = 0;
     
     document.addEventListener('keydown', (e) => {
         const key = e.key.toLowerCase();
         
-        // Check if the pressed key matches the next key in the sequence
         if (key === konamiCode[konamiIndex] || e.key === konamiCode[konamiIndex]) {
             konamiIndex++;
             
@@ -38,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 activateKonamiMode();
             }
         } else {
-            konamiIndex = 0; // Reset if wrong key
+            konamiIndex = 0;
         }
     });
     
@@ -67,9 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
     let upsideDownMode = false;
     
-    // Easter Egg :) : Upside Down Cards, click U
+    // Easter Egg: Press U for upside down
     document.addEventListener('keydown', (e) => {
-        // Upside Down Mode, Press 'U'
         if (e.key.toLowerCase() === 'u') {
             upsideDownMode = !upsideDownMode;
             const allPokemon = document.querySelectorAll('.pokemon, .welcome-pokemon-card');
@@ -83,15 +81,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     
-    // Easter Egg :) : Level Up Sound
+    // Easter Egg: Level up sound when beating high score
     function playLevelUpSound() {
         const audio = new Audio('assets/level_up.mp3');
         audio.volume = 0.015;
         audio.play().catch(e => console.log("Level up audio failed:", e));
     }
     
-    // Easter Egg :) : Surprised Pikachu
-    function showSurprisedPikachu(wrongCount) {
+    // Easter Egg: Surprised Pikachu on wrong answers
+    function showSurprisedPikachu() {
         const pikachu = document.createElement('div');
         pikachu.style.position = 'fixed';
         pikachu.style.bottom = '20px';
@@ -119,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 2000);
     }
     
-    // Load 6 random popular Pokemon for welcome page showcase
+    // Load random Pokemon for welcome page
     function loadWelcomePokemon() {
         const popularPokemon = [25, 6, 9, 3, 1, 94, 150, 249, 384, 445, 643, 644];
         const usedIndices = [];
@@ -127,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < 6; i++) {
             let randomIndex;
             
-            // Pick a random Pokemon that hasn't been used yet
             do {
                 randomIndex = Math.floor(Math.random() * popularPokemon.length);
             } while (usedIndices.includes(randomIndex));
@@ -135,20 +132,16 @@ document.addEventListener("DOMContentLoaded", () => {
             usedIndices.push(randomIndex);
             const id = popularPokemon[randomIndex];
             
-            // Fetch Pokemon data from API
             fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
             .then(response => response.json())
             .then(data => {
-                // Create card element for welcome page
                 const welcomeCard = document.createElement("div");
                 welcomeCard.classList.add("welcome-pokemon-card");
                 
-                // Add Pokemon image
                 const img = document.createElement("img");
                 img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
                 img.alt = data.name;
                 
-                // Add Pokemon name
                 const name = document.createElement("div");
                 name.classList.add("welcome-pokemon-name");
                 name.textContent = data.name;
@@ -163,16 +156,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
     
-    // Load Pokemon for welcome page on startup
     loadWelcomePokemon();
     
-    // Switch from welcome page to game page when start button is clicked
+    // Switch to game page
     welcomeStartButton.addEventListener("click", () => {
         welcomePage.style.display = "none";
         gamePage.style.display = "block";
     });
     
-    // Get all game elements and initialize variables
+    // Game variables
     const controlButton = document.getElementsByClassName("controls-overlay")[0];
     const difficultySelect = document.getElementById("difficulty-select");
     const gameBoardSortedCards = document.getElementById("game-board-sorted-cards");
@@ -187,14 +179,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentScore = 0;
     let triesRemaining = 5;
     let highScore = parseInt(localStorage.getItem("pokemonSortHighScore")) || 0;
-    let pokemonStats = {}; // Stores base stat totals put it in JS to prevent cheating
+    let pokemonStats = {};
 
-    // Drag and drop variables
+    // Drag variables
     let draggedElement = null;
     let draggedFrom = null;
     let clone = null;
 
-    // Pokemon generation ID ranges
+    // Pokemon generation ranges
     const generationRanges = {
         "1": { min: 1, max: 151 },
         "2": { min: 152, max: 251 },
@@ -208,18 +200,16 @@ document.addEventListener("DOMContentLoaded", () => {
         "all": { min: 1, max: 1025 }
     };
 
-    // Start/Reset button click handler
+    // Start button handler
     controlButton.addEventListener("click", (e) => {
-        // Prevent multiple clicks while loading
         if (isLoading) {
             return;
         }
-        // Reset game if button says "RESET GAME"
         if (controlButton.textContent === "RESET GAME") {
             resetGame();
             return;
         }
-        // Begin loading new game
+        
         isLoading = true;
         controlButton.disabled = true;
         controlButton.textContent = "LOADING...";
@@ -232,30 +222,26 @@ document.addEventListener("DOMContentLoaded", () => {
         gameScoreText.textContent = `Score: ${currentScore} | Tries: ${triesRemaining}/5 | High Score: ${highScore}`;
         gameBoardSortedCards.textContent = "";
         
-        // Get selected options
         generation = generationSelect.value;
         totalPokemon = difficultySelect.value;
         let pokemonAdded = 0;
         
-        // loop until all Pokemon are fetched
         function fetchPokemon() {
             if (pokemonAdded >= totalPokemon) {
                 startGame();
                 return;
             }
             
-            // Get random ID within selected generation range
             const range = generationRanges[generation];
             let id = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
             
-            // Skip if we already have this Pokemon
             if (usedPokemonIds.includes(id)) {
                 fetchPokemon();
                 return;
             }
             
             usedPokemonIds.push(id);
-            // Fetch Pokemon data from PokeAPI
+            
             fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
             .then(response => {
                 if (!response.ok) {
@@ -309,29 +295,43 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchPokemon();
     });
 
-    // Mouse down handler - start dragging a Pokemon card
+    // Mouse down handler, start dragging Pokemon card
     function handleMouseDown(e) {
-        // Only drag if clicking on a Pokemon card
-        if (!e.target.classList.contains("pokemon")) return;
+        // Prevent multiple drags at once, since it was making duplicates
+        if (draggedElement || clone) {
+            return;
+        }
+        
+        // Ignore clicks on buttons or disabled elements
+        if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+            return;
+        }
+        
+        // Find the Pokemon card being clicked
+        let pokemonCard = e.target;
+        if (!pokemonCard.classList.contains("pokemon")) {
+            pokemonCard = pokemonCard.closest(".pokemon");
+        }
+        if (!pokemonCard) return;
 
         e.preventDefault();
-        draggedElement = e.target;
-        draggedFrom = e.target.parentElement;
+        draggedElement = pokemonCard;
+        draggedFrom = pokemonCard.parentElement;
 
         // Create visual clone that follows cursor
-        clone = e.target.cloneNode(true);
+        clone = pokemonCard.cloneNode(true);
         clone.style.position = "fixed";
         clone.style.pointerEvents = "none";
         clone.style.zIndex = "1000";
         clone.style.opacity = "0.8";
-        clone.w = e.target.offsetWidth / 2; // Store half width for centering
-        clone.h = e.target.offsetHeight / 2; // Store half height for centering
+        clone.w = pokemonCard.offsetWidth / 2; // Store half width for centering
+        clone.h = pokemonCard.offsetHeight / 2; // Store half height for centering
         clone.style.left = (e.clientX - clone.w) + "px";
         clone.style.top = (e.clientY - clone.h) + "px";
         document.body.appendChild(clone);
         
         // Make original card transparent while dragging
-        e.target.style.opacity = "0.3";
+        pokemonCard.style.opacity = "0.3";
     }
 
     // Mouse move handler - update clone position while dragging
@@ -341,9 +341,16 @@ document.addEventListener("DOMContentLoaded", () => {
         clone.style.top = (e.clientY - clone.h) + "px";
     }
 
-    // Mouse up handler - drop the Pokemon card
+    // Mouse up handler drop card
     function handleMouseUp(e) {
-        if (!draggedElement) return;
+        if (!draggedElement) {
+            // remove any that are left behind, since it was making duplicates
+            if (clone) {
+                clone.remove();
+                clone = null;
+            }
+            return;
+        }
 
         // Remove visual clone
         if (clone) {
@@ -354,10 +361,29 @@ document.addEventListener("DOMContentLoaded", () => {
         // Restore original card opacity
         draggedElement.style.opacity = "1";
         
-        // Check if dropped on a score slot
-        const scoreDiv = e.target.classList.contains("score") ? e.target : e.target.parentElement;
+        // Find what we're dropping on
+        let dropTarget = e.target;
         
-        if (scoreDiv && scoreDiv.classList.contains("score")) {
+        // Check if we're dropping in the unsorted container area
+        let isOverUnsorted = false;
+        if (dropTarget.id === "Pokemon-container") {
+            isOverUnsorted = true;
+        } else {
+            let parent = dropTarget;
+            while (parent && parent !== document.body) {
+                if (parent.id === "Pokemon-container") {
+                    isOverUnsorted = true;
+                    break;
+                }
+                parent = parent.parentElement;
+            }
+        }
+        
+        let scoreDiv = dropTarget.classList.contains("score") ? dropTarget : dropTarget.closest(".score");
+        let targetPokemon = dropTarget.classList.contains("pokemon") ? dropTarget : dropTarget.closest(".pokemon");
+        
+        // Dropping on a score slot
+        if (scoreDiv && !isOverUnsorted) {
             const existing = scoreDiv.querySelector(".pokemon");
             const draggedName = draggedElement.querySelector(".pokemon-name");
             
@@ -373,21 +399,31 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 draggedFrom.appendChild(draggedElement);
             }
-        } else if (e.target.classList.contains("pokemon")) {
-            const targetPokemon = e.target;
+        }
+        // Dropping on another Pokemon card in sorted area
+        else if (targetPokemon && targetPokemon !== draggedElement && !isOverUnsorted) {
             const draggedName = draggedElement.querySelector(".pokemon-name");
             const targetName = targetPokemon.querySelector(".pokemon-name");
+            const targetParent = targetPokemon.parentElement;
             
-            if (draggedName) draggedName.style.display = "block";
-            if (targetName && draggedFrom.classList && draggedFrom.classList.contains("score")) targetName.style.display = "none";
+            if (draggedName) draggedName.style.display = "none";
+            if (targetName && draggedFrom.id === "Pokemon-container") {
+                targetName.style.display = "block";
+            } else if (targetName) {
+                targetName.style.display = "none";
+            }
             
-            targetPokemon.parentElement.appendChild(draggedElement);
+            targetParent.appendChild(draggedElement);
             draggedFrom.appendChild(targetPokemon);
-        } else if (e.target.id === "Pokemon-container" || e.target.parentElement.id === "Pokemon-container") {
+        }
+        // Dropping anywhere in unsorted container area
+        else if (isOverUnsorted) {
             const name = draggedElement.querySelector(".pokemon-name");
             if (name) name.style.display = "block";
             pokemonContainer.appendChild(draggedElement);
-        } else {
+        }
+        // Invalid drop
+        else {
             draggedFrom.appendChild(draggedElement);
         }
 
@@ -398,6 +434,16 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
+    
+    // if somebody is using a autoclicker, removes all the duplicates the autoclicker creates
+    setInterval(() => {
+        const stuckClones = document.querySelectorAll('.pokemon[style*="position: fixed"]');
+        stuckClones.forEach(stuck => {
+            if (stuck !== clone) {
+                stuck.remove();
+            }
+        });
+    }, 1000);
 
     // Start the game after loading Pokemon
     function startGame() {
@@ -444,7 +490,8 @@ document.addEventListener("DOMContentLoaded", () => {
             checkButton.style.letterSpacing = "1px";
             checkButton.style.textTransform = "uppercase";
             
-            checkButton.addEventListener("click", () => {
+            checkButton.addEventListener("click", (e) => {
+                e.stopPropagation(); // Prevent event from bubbling
                 checkOrder();
             });
             
@@ -551,8 +598,7 @@ document.addEventListener("DOMContentLoaded", () => {
             triesRemaining--;
             
             // Show Surprised Pikachu on every wrong answer
-            const wrongCount = 5 - triesRemaining;
-            showSurprisedPikachu(wrongCount);
+            showSurprisedPikachu();
             
             // Check if game over
             if (triesRemaining <= 0) {
@@ -579,6 +625,14 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Load new set of Pokemon for next round when you finish a round
     function loadNextRound() {
+        // Reset drag state to prevent glitches
+        if (clone) {
+            clone.remove();
+            clone = null;
+        }
+        draggedElement = null;
+        draggedFrom = null;
+        
         usedPokemonIds = [];
         pokemonContainer.textContent = "";
         gameBoardSortedCards.textContent = "";
@@ -666,6 +720,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     // Reset game to initial state
     function resetGame() {
+        // Reset drag state to prevent glitches, since it was making duplicates
+        if (clone) {
+            clone.remove();
+            clone = null;
+        }
+        draggedElement = null;
+        draggedFrom = null;
+        
         currentScore = 0;
         triesRemaining = 5;
         usedPokemonIds = [];
